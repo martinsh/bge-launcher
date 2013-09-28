@@ -113,6 +113,7 @@ class MainFrame2(MainFrame):
 		file_object.write(doc.toprettyxml());
 		file_object.close()	
 	
+	### new congig.xml will be saved when game is started
 	def saveXML(self):
 		doc = minidom.Document()
 		url = ""
@@ -141,11 +142,12 @@ class MainFrame2(MainFrame):
 		file_object.write(doc.toprettyxml());
 		file_object.close()	
 
-	
+	### methode deletes the tmp folder
 	def deleteTmpFolder(self):
 		if os.path.exists(self.tmpFolder):
 			shutil.rmtree(self.tmpFolder)
-
+	
+	### methode for unzipping the game files
 	def unzipData(self,folderpath,filename,filepath):
 		zfile = zipfile.ZipFile(filepath)
 		for name in zfile.namelist():
@@ -159,7 +161,8 @@ class MainFrame2(MainFrame):
 				fd.close()
 		zfile.close()
 	
-			
+	
+	### blenderplayer option fullscreen
 	def fullScreenMode(self):
 		self.fullscreen = self.m_fullscreen.GetValue()
 		if self.fullscreen == True:
@@ -167,6 +170,7 @@ class MainFrame2(MainFrame):
 		else:
 			return '-w '
 	
+	### blenderplayer option anti aliasing
 	def antiAliasing(self):
 		self.aa = self.m_aa.GetStringSelection()
 		if self.aa == 'off':
@@ -174,11 +178,12 @@ class MainFrame2(MainFrame):
 		else:
 			return self.aa
 	
+	### runs the blenderplayer with the launcher settings
 	def runBlender(self):
 		self.resolution = self.m_resolution.GetStringSelection()
 		active_res = self.resolution.partition('x')
 		### change to folder to blenderplayer folder
-		os.chdir(os.path.join(os.getcwd(),"data","player"))
+		os.chdir(self.folderpath)
 		
 		### blenderplayer command
 		command = ("blenderplayer" + ### Blenderplayer path
@@ -196,14 +201,14 @@ class MainFrame2(MainFrame):
 			self.deleteTmpFolder()
 			sys.exit(0)
 		
-
+	### start button click
 	def OnStartGameClick( self, event ):
 		self.saveXML()	
 		self.unzipData(self.tmpFolder,self.filename,self.filepath)	
 		self.Hide()
 		self.runBlender()
 		
-		
+	### exit button click	
 	def OnExitClick( self, event ):
 		self.deleteTmpFolder()
 		sys.exit(0)
