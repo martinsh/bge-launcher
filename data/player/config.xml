@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<launcher>
+	<title value="BGE Launcher"/>
+	<blendfile value="data\game.blend"/>
+	<nomipmap value="0"/>
+	<show_framerate value="0"/>
+	<res_index value="0"/>
+	<fullscreen value="False"/>
+	<aa value="0"/>
+	<splash_screen value="data\images\splash.png"/>
+	<resolution value="640x480"/>
+	<resolution value="800x600"/>
+	<resolution value="1024x768"/>
+	<resolution value="1152x864"/>
+	<resolution value="1280x720"/>
+	<resolution value="1280x768"/>
+	<resolution value="1280x800"/>
+	<resolution value="1280x960"/>
+	<resolution value="1280x1024"/>
+	<resolution value="1440x900"/>
+	<resolution value="1600x1200"/>
+	<resolution value="1680x1050"/>
+	<resolution value="1920x1080"/>
+	<resolution value="1920x1200"/>
+</launcher>
