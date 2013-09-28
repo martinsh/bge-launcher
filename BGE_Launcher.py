@@ -25,25 +25,20 @@ class MainFrame2(MainFrame):
 		### write XML file
 		try:
 			f = open("./data/player/config.xml","r")
-			print("file found")
+			print("config.xml found!")
 		except:
-			print("writing new file")
+			print("config.xml not found! writing file.")
 			self.initXML()
 		
 		### launcher settings
 		doc = minidom.parse(os.path.join(self.folderpath,"config.xml"))
 		self.window_title=doc.getElementsByTagName('title')[0].attributes['value'].value
-		self.blenderplayer=doc.getElementsByTagName('blenderplayer')[0].attributes['value'].value
 		self.blendfile=doc.getElementsByTagName('blendfile')[0].attributes['value'].value
 		self.show_framerate=int(doc.getElementsByTagName('show_framerate')[0].attributes['value'].value)
 		self.nomipmap=int(doc.getElementsByTagName('nomipmap')[0].attributes['value'].value)
 		self.splash_screen = doc.getElementsByTagName('splash_screen')[0].attributes['value'].value
 		self.aa = int(doc.getElementsByTagName('aa')[0].attributes['value'].value)
-		
-		if doc.getElementsByTagName('fullscreen')[0].attributes['value'].value == 'True':
-			self.fullscreen = True	
-		else:
-			self.fullscreen = False
+		self.fullscreen = eval(doc.getElementsByTagName('fullscreen')[0].attributes['value'].value)
 		self.res_index = int(doc.getElementsByTagName('res_index')[0].attributes['value'].value)
 		
 		self.resolutions = []
@@ -91,14 +86,13 @@ class MainFrame2(MainFrame):
 		
 		createElement("title","value","BGE Launcher")
 		
-		createElement("blenderplayer","value",os.path.join("data","player","blenderplayer.exe"))
-		createElement("blendfile","value",os.path.join("data","player","data","zipfile.blend"))
+		createElement("blendfile","value",os.path.join("data","game.blend"))
 		createElement("nomipmap","value","0")
 		createElement("show_framerate","value","0")
 		createElement("res_index","value","0")
 		createElement("fullscreen","value","False")
 		createElement("aa","value","0")
-		createElement("splash_screen","value",os.path.join(".","data","images","splash.png"))
+		createElement("splash_screen","value",os.path.join("data","images","splash.png"))
 		
 		createElement("resolution","value","640x480")
 		createElement("resolution","value","800x600")
@@ -132,7 +126,6 @@ class MainFrame2(MainFrame):
 		
 		createElement("title","value",self.window_title)
 		
-		createElement("blenderplayer","value",self.blenderplayer)
 		createElement("blendfile","value",self.blendfile)
 		createElement("nomipmap","value",str(self.nomipmap))
 		createElement("show_framerate","value",str(self.show_framerate))
@@ -152,8 +145,6 @@ class MainFrame2(MainFrame):
 	def deleteTmpFolder(self):
 		if os.path.exists(self.tmpFolder):
 			shutil.rmtree(self.tmpFolder)
-		#if os.path.exists(os.path.join(self.folderpath,"data")):
-		#	shutil.rmtree(os.path.join(self.folderpath,"data"))
 
 	def unzipData(self,folderpath,filename,filepath):
 		zfile = zipfile.ZipFile(filepath)
@@ -195,20 +186,19 @@ class MainFrame2(MainFrame):
 				   ' -g show_framerate = ' + str(self.show_framerate) + ### Framerate settings
 				   ' -g nomipmap = '+ str(self.nomipmap) + ### Mipmap settings
 				   ' ' + self.fullScreenMode()  + active_res[0] + ' ' + active_res[2] + ' ' + ### Resolution settings 
-				   os.path.join(self.tmpFolder,self.blendfile)) ### Blendfile path		
-		
-		#print(command)
+				   os.path.join(self.tmpFolder,self.blendfile)) ### Blendfile path
+				   
+		### execute a process that starts the blenderplayer with settings from the launcher
 		proc = subprocess.Popen(command,shell=True)
-		print(command)
 		stdout,stderr = proc.communicate()
 		if stderr == None:
+			### if blenderplayer process ends, the tmp folder will be deleted and launcher exits
 			self.deleteTmpFolder()
 			sys.exit(0)
 		
 
 	def OnStartGameClick( self, event ):
-		self.saveXML()
-		#self.unzipData(self.folderpath,self.filename,self.filepath)	
+		self.saveXML()	
 		self.unzipData(self.tmpFolder,self.filename,self.filepath)	
 		self.Hide()
 		self.runBlender()
