@@ -47,7 +47,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="Splash">
+      <widget class="QLabel" name="splash">
        <property name="minimumSize">
         <size>
          <width>5</width>
@@ -98,7 +98,7 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="labelResolution">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -114,7 +114,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="labelAntiAliasing">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -130,7 +130,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="labelHidden_1">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -147,7 +147,7 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <widget class="QComboBox" name="comboBox">
+        <widget class="QComboBox" name="resolution">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -157,7 +157,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_2">
+        <widget class="QComboBox" name="antiAliasing">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -194,7 +194,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="playButton">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -213,7 +213,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="quitButton">
            <property name="text">
             <string>Quit</string>
            </property>
@@ -229,7 +229,7 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QCheckBox" name="checkBox">
+        <widget class="QCheckBox" name="fullscreen">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -248,7 +248,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_5">
+        <widget class="QLabel" name="labelHidden_2">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -261,7 +261,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_6">
+        <widget class="QLabel" name="labelHidden_3">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
