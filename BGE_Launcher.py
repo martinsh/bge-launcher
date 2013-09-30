@@ -15,8 +15,7 @@ class MainFrame2(MainFrame):
 	def __init__(self,parent):
 		super(MainFrame2,self).__init__(parent)
 		### zip pathes
-		self.resourcePath = os.path.dirname(__file__)
-		self.filename = os.path.basename(self.resourcePath)
+		self.filename = "game.data"
 		self.folderpath = os.path.join(os.getcwd(),"data","player")
 		self.filepath = os.path.join(self.folderpath,"game.data")
 		
