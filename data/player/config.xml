@@ -7,7 +7,7 @@
 	<res_index value="0"/>
 	<fullscreen value="False"/>
 	<aa value="0"/>
-	<splash_screen value="data\images\splash.png"/>
+	<splash_screen value="data/images/splash.png"/>
 	<resolution value="640x480"/>
 	<resolution value="800x600"/>
 	<resolution value="1024x768"/>
