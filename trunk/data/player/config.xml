@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <launcher>
 	<title value="BGE Launcher"/>
-	<blendfile value="data\game.blend"/>
+	<blendfile value="data/game.blend"/>
 	<nomipmap value="0"/>
 	<show_framerate value="0"/>
 	<res_index value="0"/>
-	<fullscreen value="False"/>
-	<aa value="0"/>
+	<aa value="off"/>
+	<fullscreen value="0"/>
 	<splash_screen value="data/images/splash.png"/>
 	<resolution value="640x480"/>
 	<resolution value="800x600"/>

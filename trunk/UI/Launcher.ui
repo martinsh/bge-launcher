@@ -34,6 +34,10 @@
   <property name="windowTitle">
    <string>BGE Launcher</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../data/images/icon.png</normaloff>../data/images/icon.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <property name="leftMargin">
     <number>0</number>
@@ -281,4 +285,7 @@
  </widget>
  <resources/>
  <connections/>
+ <slots>
+  <slot>slot1()</slot>
+ </slots>
 </ui>

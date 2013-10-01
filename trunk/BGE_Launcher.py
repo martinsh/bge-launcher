@@ -1,26 +1,34 @@
-#!/usr/bin/python2.7
-import wx
-import wx.xrc
-import sys
+from PyQt4 import QtCore, QtGui
+from ui import Ui_Form
+import atexit
+
 import subprocess
-from ui import MainFrame
 import sys, string, os
 import zipfile
 import shutil
 from xml.dom import minidom
 import tempfile
 
+
+try:
+	_fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+	_fromUtf8 = lambda s: s
 	
-class MainFrame2(MainFrame):
-	def __init__(self,parent):
-		super(MainFrame2,self).__init__(parent)
+
+class BgeLauncher(Ui_Form):
+	def setupUi(self, Form):
+		### inherit from main class
+		super(BgeLauncher,self).setupUi(Form)
+		
 		### zip pathes
 		self.filename = "game.data"
 		self.folderpath = os.path.join(os.getcwd(),"data","player")
 		self.filepath = os.path.join(self.folderpath,"game.data")
 		
+		### create tmp Folder
 		self.tmpFolder = tempfile.mkdtemp()
-
+		
 		### write XML file
 		try:
 			f = open("./data/player/config.xml","r")
@@ -29,48 +37,48 @@ class MainFrame2(MainFrame):
 			print("config.xml not found! writing file.")
 			self.initXML()
 		
-		### launcher settings
-		doc = minidom.parse(os.path.join(self.folderpath,"config.xml"))
-		self.window_title=doc.getElementsByTagName('title')[0].attributes['value'].value
-		self.blendfile=doc.getElementsByTagName('blendfile')[0].attributes['value'].value
-		self.show_framerate=int(doc.getElementsByTagName('show_framerate')[0].attributes['value'].value)
-		self.nomipmap=int(doc.getElementsByTagName('nomipmap')[0].attributes['value'].value)
-		self.splash_screen = doc.getElementsByTagName('splash_screen')[0].attributes['value'].value
-		self.aa = int(doc.getElementsByTagName('aa')[0].attributes['value'].value)
-		self.fullscreen = eval(doc.getElementsByTagName('fullscreen')[0].attributes['value'].value)
-		self.res_index = int(doc.getElementsByTagName('res_index')[0].attributes['value'].value)
+		### Load XML config file
+		self.doc = minidom.parse(os.path.join(self.folderpath,"config.xml"))
+		self.window_title=self.doc.getElementsByTagName('title')[0].attributes['value'].value
+		self.blendfile=self.doc.getElementsByTagName('blendfile')[0].attributes['value'].value
+		self.show_framerate=int(self.doc.getElementsByTagName('show_framerate')[0].attributes['value'].value)
+		self.nomipmap=int(self.doc.getElementsByTagName('nomipmap')[0].attributes['value'].value)
+		self.splash_screen = self.doc.getElementsByTagName('splash_screen')[0].attributes['value'].value
+		self.aa = self.doc.getElementsByTagName('aa')[0].attributes['value'].value
+		self.fullscreenSettings = eval(self.doc.getElementsByTagName('fullscreen')[0].attributes['value'].value)
+		self.res_index = int(self.doc.getElementsByTagName('res_index')[0].attributes['value'].value)
 		
-		self.resolutions = []
-		for resolution in doc.getElementsByTagName('resolution'):
-			self.resolutions.append(resolution.attributes['value'].value)
+		### load SplashScreen
+		self.splashPixmap = QtGui.QPixmap(_fromUtf8(self.splash_screen))
+		self.formSize = QtCore.QSize(self.splashPixmap.width(),self.splashPixmap.height()+100)
+		self.splash.setPixmap(self.splashPixmap)
 		
-
+		### resize Launcher to the Splashscreen and set Window Title
+		self.form = Form
+		Form.setWindowTitle(QtGui.QApplication.translate("Form", self.window_title, None, QtGui.QApplication.UnicodeUTF8))
+		Form.resize(self.formSize)
+		Form.setMinimumSize(self.formSize)
+		Form.setMaximumSize(self.formSize)
+		self.splash.setMaximumSize(self.formSize)
 		
-		
-		###launcher title
-		self.title = self.window_title
-		
-		### set height and width to splashscreen size
-		self.splash=wx.Image(os.path.join(os.getcwd(),self.splash_screen)).ConvertToBitmap()
-		height = self.splash.GetHeight()
-		width = self.splash.GetWidth()
-		self.SetSizeWH(width, height+150)
-		
-		### Create Dropdownbox with all setable Resolutions
-		for item in self.resolutions:
-			self.m_resolution.Append(item)
-		self.m_resolution.SetSelection(self.res_index)
-		self.m_aa.SetSelection(self.aa)
-		self.m_fullscreen.SetValue(self.fullscreen)
-
-		### pick icon.png that is displayed at the upper left corner
-		try:
-			ico = wx.Icon('./data/images/icon.png', wx.BITMAP_TYPE_PNG)
-			self.SetIcon(ico)
-		except:
-			pass
+		### connect Button with methode that is executed
+		QtCore.QObject.connect(self.playButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.runBlenderplayer)
+		QtCore.QObject.connect(self.quitButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.quitLauncher)
 		
 
+		### load available Resolutions from XML
+		self.resolution.addItems(self.addResolution())
+		self.resolution.setCurrentIndex(self.res_index)
+		self.fullscreen.setCheckState(self.fullscreenSettings)
+		self.antiAliasing.setCurrentIndex(self.antiAliasing.findText(self.aa))
+	
+	### load resolutions from config file
+	def addResolution(self):
+		resolutions = []
+		for resolution in self.doc.getElementsByTagName('resolution'):
+			resolutions.append(resolution.attributes['value'].value)
+		return resolutions	
+	
 	### write config file		
 	def initXML(self):
 		doc = minidom.Document()
@@ -90,7 +98,7 @@ class MainFrame2(MainFrame):
 		createElement("show_framerate","value","0")
 		createElement("res_index","value","0")
 		createElement("fullscreen","value","False")
-		createElement("aa","value","0")
+		createElement("aa","value","off")
 		createElement("splash_screen","value",os.path.join("data","images","splash.png"))
 		
 		createElement("resolution","value","640x480")
@@ -111,7 +119,7 @@ class MainFrame2(MainFrame):
 		file_object = open(os.path.join(self.folderpath,"config.xml"), "w")
 		file_object.write(doc.toprettyxml());
 		file_object.close()	
-	
+		
 	### new congig.xml will be saved when game is started
 	def saveXML(self):
 		doc = minidom.Document()
@@ -129,18 +137,18 @@ class MainFrame2(MainFrame):
 		createElement("blendfile","value",self.blendfile)
 		createElement("nomipmap","value",str(self.nomipmap))
 		createElement("show_framerate","value",str(self.show_framerate))
-		createElement("res_index","value",str(self.m_resolution.GetCurrentSelection()))
-		createElement("aa","value",str(self.m_aa.GetCurrentSelection()))
-		createElement("fullscreen","value",str(self.m_fullscreen.GetValue()))
+		createElement("res_index","value",str(self.resolution.currentIndex()))
+		createElement("aa","value",str(self.antiAliasing.currentText()))
+		createElement("fullscreen","value",str(self.fullscreen.checkState()))
 		createElement("splash_screen","value",self.splash_screen)
 		
-		for resolution in self.resolutions:
+		for resolution in self.addResolution():
 			createElement("resolution","value",resolution)
 		
 		file_object = open(os.path.join(self.folderpath,"config.xml"), "w")
 		file_object.write(doc.toprettyxml());
 		file_object.close()	
-
+	
 	### methode deletes the tmp folder
 	def deleteTmpFolder(self):
 		if os.path.exists(self.tmpFolder):
@@ -160,59 +168,69 @@ class MainFrame2(MainFrame):
 				fd.close()
 		zfile.close()
 	
-	
-	### blenderplayer option fullscreen
+		### blenderplayer option fullscreen
 	def fullScreenMode(self):
-		self.fullscreen = self.m_fullscreen.GetValue()
-		if self.fullscreen == True:
+		if self.fullscreen.checkState() == 2:
 			return '-f '
 		else:
 			return '-w '
 	
 	### blenderplayer option anti aliasing
-	def antiAliasing(self):
-		self.aa = self.m_aa.GetStringSelection()
-		if self.aa == 'off':
+	def setAntiAliasing(self):
+		if self.antiAliasing.currentText() == 'off':
 			return '0'
 		else:
-			return self.aa
+			return str(self.antiAliasing.currentText())
 	
 	### runs the blenderplayer with the launcher settings
-	def runBlender(self):
-		self.resolution = self.m_resolution.GetStringSelection()
-		active_res = self.resolution.partition('x')
+	def blenderplayerProcess(self):
+	
+	
+		resolution = str(self.resolution.currentText()).partition('x')
 		### change to folder to blenderplayer folder
 		os.chdir(self.folderpath)
 		
+		
 		### blenderplayer command
-		command = ("blenderplayer" + ### Blenderplayer path
-				   ' ' + '-m ' + self.antiAliasing() + ### Antialiasing settings
-				   ' -g show_framerate = ' + str(self.show_framerate) + ### Framerate settings
-				   ' -g nomipmap = '+ str(self.nomipmap) + ### Mipmap settings
-				   ' ' + self.fullScreenMode()  + active_res[0] + ' ' + active_res[2] + ' ' + ### Resolution settings 
-				   os.path.join(self.tmpFolder,self.blendfile)) ### Blendfile path
-				   
+		command = (
+				   "blenderplayer" # Blenderplayer
+				   " -m " + self.setAntiAliasing() +# Anti Aliasing settings
+				   " -g nomipmap = "+ str(self.nomipmap) + # Mipmap settings
+				   " " + self.fullScreenMode() + resolution[0]+" "+resolution[2]+" "+# Resolution settings
+				   os.path.join(self.tmpFolder,self.blendfile) #Blendfile path)
+				   )
+		
 		### execute a process that starts the blenderplayer with settings from the launcher
 		proc = subprocess.Popen(command,shell=True)
+		proc.title = "test"
 		stdout,stderr = proc.communicate()
 		if stderr == None:
 			### if blenderplayer process ends, the tmp folder will be deleted and launcher exits
 			self.deleteTmpFolder()
 			sys.exit(0)
-		
-	### start button click
-	def OnStartGameClick( self, event ):
-		self.saveXML()	
-		self.unzipData(self.tmpFolder,self.filename,self.filepath)	
-		self.Hide()
-		self.runBlender()
-		
-	### exit button click	
-	def OnExitClick( self, event ):
+	
+	### start the blenderplayer with configured settings from the launcher
+	def runBlenderplayer(self):
+		self.saveXML()
+		self.form.hide()
+		self.unzipData(self.tmpFolder,self.filename,self.filepath)
+		self.blenderplayerProcess()
+	
+	def quitLauncher(self):
 		self.deleteTmpFolder()
 		sys.exit(0)
 
-app = wx.PySimpleApp()
-frame = MainFrame2(None)
-frame.Show(1)
-app.MainLoop()
+	def awesome(self):
+		print("awesome")
+
+		
+if __name__ == "__main__":
+	import sys
+	app = QtGui.QApplication(sys.argv)
+	Form = QtGui.QWidget()
+	ui = BgeLauncher()
+	ui.setupUi(Form)
+	Form.show()
+	atexit.register(ui.quitLauncher)
+	sys.exit(app.exec_())
+	
