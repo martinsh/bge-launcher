@@ -1,6 +1,7 @@
 from PyQt4 import QtCore, QtGui
-from ui import Ui_Form
+from ui import Ui_MainWindow
 import atexit
+from functools import partial
 
 import subprocess
 import sys, string, os
@@ -16,10 +17,14 @@ except AttributeError:
 	_fromUtf8 = lambda s: s
 	
 
-class BgeLauncher(Ui_Form):
-	def setupUi(self, Form):
+class BgeLauncher(Ui_MainWindow):
+	def setupUi(self, MainWindow):
+		sshFile = "style.css"
+		with open(sshFile,"r") as fh:
+			MainWindow.setStyleSheet(fh.read())
+	
 		### inherit from main class
-		super(BgeLauncher,self).setupUi(Form)
+		super(BgeLauncher,self).setupUi(MainWindow)
 		
 		### zip pathes
 		self.filename = "game.data"
@@ -54,18 +59,25 @@ class BgeLauncher(Ui_Form):
 		self.splash.setPixmap(self.splashPixmap)
 		
 		### resize Launcher to the Splashscreen and set Window Title
-		self.form = Form
-		Form.setWindowTitle(QtGui.QApplication.translate("Form", self.window_title, None, QtGui.QApplication.UnicodeUTF8))
-		Form.resize(self.formSize)
-		Form.setMinimumSize(self.formSize)
-		Form.setMaximumSize(self.formSize)
+		self.mainWindow = MainWindow
+		MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", self.window_title, None, QtGui.QApplication.UnicodeUTF8))
+		MainWindow.resize(self.formSize)
+		MainWindow.setMinimumSize(self.formSize)
+		MainWindow.setMaximumSize(self.formSize)
 		self.splash.setMaximumSize(self.formSize)
+		
+		#MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+		#MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+		
+		### Center Window on Screen
+		self.screenResolution = QtGui.QDesktopWidget().screenGeometry()
+		MainWindow.setGeometry(0,0,self.splashPixmap.width(),self.splashPixmap.height()+100)
+		MainWindow.move((self.screenResolution.width()/2) - (self.formSize.width()/2),
+						(self.screenResolution.height()/2) - (self.formSize.height()/2))
 		
 		### connect Button with methode that is executed
 		QtCore.QObject.connect(self.playButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.runBlenderplayer)
 		QtCore.QObject.connect(self.quitButton, QtCore.SIGNAL(_fromUtf8("clicked()")), self.quitLauncher)
-		
-
 		### load available Resolutions from XML
 		self.resolution.addItems(self.addResolution())
 		self.resolution.setCurrentIndex(self.res_index)
@@ -212,7 +224,7 @@ class BgeLauncher(Ui_Form):
 	### start the blenderplayer with configured settings from the launcher
 	def runBlenderplayer(self):
 		self.saveXML()
-		self.form.hide()
+		self.mainWindow.hide()
 		self.unzipData(self.tmpFolder,self.filename,self.filepath)
 		self.blenderplayerProcess()
 	
@@ -223,14 +235,24 @@ class BgeLauncher(Ui_Form):
 	def awesome(self):
 		print("awesome")
 
-		
+
 if __name__ == "__main__":
 	import sys
 	app = QtGui.QApplication(sys.argv)
-	Form = QtGui.QWidget()
+	MainWindow = QtGui.QMainWindow()
 	ui = BgeLauncher()
-	ui.setupUi(Form)
-	Form.show()
+	ui.setupUi(MainWindow)
+	MainWindow.show()
 	atexit.register(ui.quitLauncher)
 	sys.exit(app.exec_())
+		
+# if __name__ == "__main__":
+	# import sys
+	# app = QtGui.QApplication(sys.argv)
+	# Form = QtGui.QWidget()
+	# ui = BgeLauncher()
+	# ui.setupUi(Form)
+	# Form.show()
+	# atexit.register(ui.quitLauncher)
+	# sys.exit(app.exec_())
 	
