@@ -1,0 +1,38 @@
+/* For custom Launcher appearance use this stylesheet*/
+
+QMainWindow{/*,#MainWindow,#centralwidget{*/
+/*background-color:#ffff00;
+border-radius:10px;
+border:1px solid red;*/
+}
+
+#splash{
+}
+
+#line{
+}
+
+#labelAntiAliasing{
+}
+
+#labelResolution{
+}
+
+#antiAliasing{
+}
+
+#resolution{
+}
+
+#fullscreen{
+}
+
+#playButton{
+/*border-radius:3px;
+border:1px solid red;
+background: qlineargradient( x1:0 y1:0, x2:0 y2:1, stop:0 #00ff00, stop:1 #00ffff);
+background-image:url("data/images/splash.png")*/
+}
+
+#quitButton{
+}
