@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Launcher.ui'
 #
-# Created: Wed Oct 02 12:46:28 2013
+# Created: Wed Oct 02 15:32:23 2013
 #      by: PyQt4 UI code generator 4.9.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -20,6 +20,9 @@ class Ui_MainWindow(object):
         MainWindow.resize(500, 430)
         MainWindow.setMinimumSize(QtCore.QSize(500, 430))
         MainWindow.setMaximumSize(QtCore.QSize(500, 430))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("../data/images/icon.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         MainWindow.setWindowOpacity(1.0)
         MainWindow.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
         MainWindow.setTabShape(QtGui.QTabWidget.Rounded)
