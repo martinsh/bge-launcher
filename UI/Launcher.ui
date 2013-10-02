@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>BGE Launcher</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../data/images/icon.png</normaloff>../data/images/icon.png</iconset>
+  </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
   </property>
